@@ -39,6 +39,7 @@ public class ReadWebPage
         File toScan = new File("mainFile.txt");
         Scanner mainReader = new Scanner(toScan);
         
+        //skip the first 
         for(int i=0; i < 1514; i++)
         {
             mainReader.nextLine();
@@ -47,22 +48,18 @@ public class ReadWebPage
         {
             String line = mainReader.nextLine();
             if(line.contains("thumb-link\" href=\"https://"))
-            {
-               //System.out.println(line);
-               //System.out.println("success");
-               //System.out.println(n);
-               //n++;
-               
+            {  
                String shortLine = line.substring(28, line.length());
                link = shortLine.substring(0, shortLine.indexOf('"'));
-               //System.out.println(index);
+               
+               //check that it is getting the links with this print line
                System.out.println(link);
                
                
-               //3. generate new file based on link
+            //3. generate new file based on the link
                HttpClient client1 = HttpClient.newHttpClient();
                HttpRequest request1 = HttpRequest.newBuilder()
-                  .uri(URI.create(link)) //recipie webpage
+                  .uri(URI.create(link)) //recipe webpage
                   .GET() // GET is default
                   .build();
 
@@ -70,14 +67,79 @@ public class ReadWebPage
                   HttpResponse.BodyHandlers.ofString());
 
 
-               //output to a file so its easy to mess with (you won’t be for your finished program)
+               //output to a file so its easy to mess with
                   FileOutputStream fs1 = new FileOutputStream("recipe.txt");
                   PrintWriter pw1 = new PrintWriter(fs1);
-                  pw1.println(response1.body()); //response.body() is the html source code in a string format. It outputs to a file so you can see it easier right now, but you will ultimately want to just manipulate the strings a lot
+                  pw1.println(response1.body()); //response.body() is the html source code in a string format
                   pw1.close();
                   
-            //Sleep between requests
-                Thread.sleep(10000);
+                  
+               //in here is where the stuff will be found and then written to the excel file
+                  //4. Search file for new information
+                  File toScanRecipe = new File("recipe.txt");
+                  Scanner recipeReader = new Scanner(toScanRecipe);
+                  
+                  for(int i=0; i < 1162; i++) //skip all the lines that dont really matter
+                  {
+                     recipeReader.nextLine();
+                  }
+                  while (recipeReader.hasNextLine())
+                  {
+                     String lineRecipe = recipeReader.nextLine();
+                     
+                     if(lineRecipe.contains("recipe-author"))
+                     { 
+                        lineRecipe = recipeReader.nextLine();
+                        System.out.println(lineRecipe);
+                        //write to file
+                     }
+                     
+         //needs to find the path too
+         
+                     if(lineRecipe.contains("recipe-details-serves"))
+                     {
+                        lineRecipe = recipeReader.nextLine();
+                        System.out.println(lineRecipe);
+                        //write to file
+                     }
+
+                     boolean stop = false;
+                     if(lineRecipe.contains("recipe-details-ingredients"))
+                     {
+                        while(recipeReader.hasNextLine() && stop == false)
+                        {
+                           lineRecipe = recipeReader.nextLine();
+                           System.out.println(lineRecipe);
+                           //write to file 
+                           if(lineRecipe.contains("</div>"))
+                           {
+                              stop = true;
+                              //end ingredients reading
+                           }
+                        }
+                     }
+                     
+                     stop = false;
+                     if(lineRecipe.contains("recipe-details-procedure"))
+                     {
+                        while(recipeReader.hasNextLine() && stop == false)
+                        {
+                           lineRecipe = recipeReader.nextLine();
+                           System.out.println(lineRecipe);
+                           //write to file 
+                           if(lineRecipe.contains("</div>"))
+                           {
+                              stop = true;
+                              //end instructions reading
+                           }
+                        }
+                     }
+                  }
+                  //5. write information to excel file (do this in each if statement)
+                  
+                  
+               //Sleep between requests
+                  Thread.sleep(10000);
             }  
         }
     }
