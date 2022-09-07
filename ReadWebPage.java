@@ -34,7 +34,10 @@ public class ReadWebPage
         
         //2. search main file for links to recipes 
         String link = "placeholder";
-        
+
+        //Resourcing Arraylist
+        String[] arrayHolder = new String[6]; //[author0, path1, name2, servings3, ingredients4, instructions5]
+        //ArrayList<String[]> list = new ArrayList<String[]>(); //USE CSV array thingy
         
         File toScan = new File("mainFile.txt");
         Scanner mainReader = new Scanner(toScan);
@@ -91,15 +94,19 @@ public class ReadWebPage
                      { 
                         lineRecipe = recipeReader.nextLine();
                         System.out.println(lineRecipe);
+                        arrayHolder[0] = lineRecipe; //author
                         //write to file
                      }
                      
          //needs to find the path too
+         arrayHolder[1] = "/path/to/recipe"; //path
+         arrayHolder[2] = "name of recipe"; //name of recipe
          
                      if(lineRecipe.contains("recipe-details-serves"))
                      {
                         lineRecipe = recipeReader.nextLine();
                         System.out.println(lineRecipe);
+                        arrayHolder[3] = lineRecipe; //servings
                         //write to file
                      }
 
@@ -110,6 +117,7 @@ public class ReadWebPage
                         {
                            lineRecipe = recipeReader.nextLine();
                            System.out.println(lineRecipe);
+                           arrayHolder[4] = lineRecipe; //ingredients
                            //write to file 
                            if(lineRecipe.contains("</div>"))
                            {
@@ -126,6 +134,7 @@ public class ReadWebPage
                         {
                            lineRecipe = recipeReader.nextLine();
                            System.out.println(lineRecipe);
+                           arrayHolder[5] = lineRecipe; //instructions
                            //write to file 
                            if(lineRecipe.contains("</div>"))
                            {
@@ -136,7 +145,7 @@ public class ReadWebPage
                      }
                   }
                   //5. write information to excel file (do this in each if statement)
-                  
+                  CSVPrinter.write(arrayHolder); //send the array to CSVPrinter
                   
                //Sleep between requests
                   Thread.sleep(10000);
