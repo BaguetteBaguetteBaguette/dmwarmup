@@ -27,7 +27,8 @@ public class ReadWebPage
          PrintWriter pw = new PrintWriter(fs);
         pw.println(response.body()); //response.body() is the html source code in a string format. It outputs to a file so you can see it easier right now, but you will ultimately want to just manipulate the strings a lot
         pw.close();
-        
+        String columnNames[] = {"Author","Path","Name","Servings","Ingredients","Instructions"};
+        CSVPrinter.write(columnNames);
         
         
         //new code
@@ -106,7 +107,7 @@ public class ReadWebPage
                      boolean stop = false;
                      if(lineRecipe.contains("recipe-details-ingredients"))
                      {
-                        while(recipeReader.hasNextLine() && stop == false)
+                        while(recipeReader.hasNextLine() && !stop)
                         {
                            lineRecipe = recipeReader.nextLine();
                            System.out.println(lineRecipe);
@@ -122,7 +123,7 @@ public class ReadWebPage
                      stop = false;
                      if(lineRecipe.contains("recipe-details-procedure"))
                      {
-                        while(recipeReader.hasNextLine() && stop == false)
+                        while(recipeReader.hasNextLine() && !stop)
                         {
                            lineRecipe = recipeReader.nextLine();
                            System.out.println(lineRecipe);
