@@ -10,11 +10,15 @@ public class ReadWebPage
 {
     public static void main(String[] args) throws IOException, InterruptedException 
     {
-
+        int counter = 24; //used to advance the url to the next page
+        String start = "https://www.surlatable.com/recipes/?srule=best-matches&start=0&sz=24";
+        
+    while(counter <= 96)
+    {
         //1. Generate main file
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://www.surlatable.com/recipes/?srule=best-matches&start=0&sz=24")) //starting URL…
+                .uri(URI.create(start)) //starting URL…
                 .GET() // GET is default
                 .build();
 
@@ -103,37 +107,40 @@ public class ReadWebPage
                   {
                      String lineRecipe = recipeReader.nextLine();
                      
+                     //Get the author of the recipie, and add it to the array for the csv file
                      if(lineRecipe.contains("recipe-author"))
                      { 
                         lineRecipe = recipeReader.nextLine();
                         System.out.println(lineRecipe);
-                        arrayHolder[0] = lineRecipe; //author
-                        //write to file
+                        arrayHolder[0] = lineRecipe; //add author to the array
                      }
          
+                     //Get the breadcrumb trail (path) for the recipe, and make them into one string that can be added to the array for the csv file
                      if(lineRecipe.contains("breadcrumb-element"))
                      {
                         String crumb = lineRecipe.substring(lineRecipe.indexOf('>'), lineRecipe.length());
                         String shortCrumb = crumb.substring(1, crumb.indexOf('<'));
-/*problem*/             breadcrumbs.append(shortCrumb + "/"); //for some reason this isnt appending 
-                        arrayHolder[1] = breadcrumbs.toString(); //path
+                        breadcrumbs.append(shortCrumb + "/"); 
+                        arrayHolder[1] = breadcrumbs.toString(); //add the path to the array
                      }
          
+                     //Get the recipe name, and add it to the array for the csv file
                      if(lineRecipe.contains("recipe-col-2 hide-mobile")) //I know this looks strange,
                      {                                                     //but the recipe tite is on the same line as "recipe-title",
                         lineRecipe = recipeReader.nextLine();              //so in order to find it I have to look on the line above it
                         System.out.println(lineRecipe);
-                        arrayHolder[2] = lineRecipe; //recipe name
+                        arrayHolder[2] = lineRecipe; //add recipe name to the array
                      }
          
+                     //Get the number of servings for the recipe, and add it to the array for the csv file
                      if(lineRecipe.contains("recipe-details-serves"))
                      {
                         lineRecipe = recipeReader.nextLine();
                         System.out.println(lineRecipe);
-                        arrayHolder[3] = lineRecipe; //servings
-                        //write to file
+                        arrayHolder[3] = lineRecipe; //add servings to the array
                      }
 
+                     //Get the ingredients for the recipe, and make them into one string that can be added to the array for the csv file
                      stop = false;
                      if(lineRecipe.contains("recipe-details-ingredients"))
                      {
@@ -146,14 +153,15 @@ public class ReadWebPage
                            if(lineRecipe.contains("</div>"))
                            {
                               stop = true;
-                              String arrayIngr = ingredients.toString();
-                              arrayHolder[4] = arrayIngr; //ingredients
+                              arrayHolder[4] = ingredients.toString(); //add ingredients to the array
                               //end ingredients reading
                            }
                         }
                      }
                      
+                     //Get the procedure (instructions) for the recipe, and make them into one string that can be added to the array for the csv file
                      stop = false;
+                     
                      if(lineRecipe.contains("recipe-details-procedure"))
                      {
                         while(recipeReader.hasNextLine() && !stop)
@@ -165,19 +173,25 @@ public class ReadWebPage
                            if(lineRecipe.contains("</div>"))
                            {
                               stop = true;
-                              String arrayProc = procedure.toString();
-                              arrayHolder[5] = arrayProc; //instructions
+                              arrayHolder[5] = procedure.toString(); //add instructions to the array
                               //end instructions reading
                            }
                         }
                      }
                   }
-                  //5. write information to excel file (do this in each if statement)
+                  
+                  //5. write information to excel(csv) file
                   CSVPrinter.write(arrayHolder); //send the array to CSVPrinter
                   
-               //Sleep between requests
+                  //Sleep between requests (10 seconds)
                   Thread.sleep(10000);
             }  
         }
+       counter+=24; 
+       start = "https://www.surlatable.com/recipes/?srule=best-matches&start="+counter+"&sz=24";
+       System.out.println(start);
+       System.out.println(counter);
+     }   
+        
     }
 }
