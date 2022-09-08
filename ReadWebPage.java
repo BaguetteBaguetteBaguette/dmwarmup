@@ -160,6 +160,8 @@ public class ReadWebPage
                               shortRec = shortRec.replace("</b>","");
                               shortRec = shortRec.replace("<i>","");
                               shortRec = shortRec.replace("</i>","");
+                              shortRec = shortRec.replace("<ul>","");
+                              shortRec = shortRec.replace("</ul>","");
                               
                               System.out.println(shortRec);
                               ingredients.append(shortRec + " ");
@@ -189,13 +191,17 @@ public class ReadWebPage
                               arrayHolder[5] = procedure.toString(); //add instructions to the array
                               //end instructions reading
                            }
-                           else if(lineRecipe.contains("<b>") || lineRecipe.contains("<i>") || lineRecipe.contains("<br>"))
+                           else if(lineRecipe.contains("<b>") || lineRecipe.contains("<i>") || lineRecipe.contains("<br>") || lineRecipe.contains("<li>"))
                            {
                               lineRecipe = lineRecipe.replace("<b>","");
                               lineRecipe = lineRecipe.replace("</b>","");
                               lineRecipe = lineRecipe.replace("<br>","");
                               lineRecipe = lineRecipe.replace("<i>","");
-                              lineRecipe = lineRecipe.replace("</i>","");                             
+                              lineRecipe = lineRecipe.replace("</i>","");
+                              lineRecipe = lineRecipe.replace("<ul>","");
+                              lineRecipe = lineRecipe.replace("</ul>",""); 
+                              lineRecipe = lineRecipe.replace("<li>","");
+                              lineRecipe = lineRecipe.replace("</li>","");                        
                            }
                            
                            System.out.println(lineRecipe); //if this comes up /div in the output box ignore it
