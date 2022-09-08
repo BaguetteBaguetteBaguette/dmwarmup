@@ -85,10 +85,11 @@ public class ReadWebPage
                   File toScanRecipe = new File("recipe.txt");
                   Scanner recipeReader = new Scanner(toScanRecipe);
                   
-                  for(int i=0; i < 1162; i++) //skip all the lines that dont really matter
+                  for(int i=0; i < 1000; i++) //skip all the lines that dont really matter
                   {
                      recipeReader.nextLine();
                   }
+                  
                   while (recipeReader.hasNextLine())
                   {
                      String lineRecipe = recipeReader.nextLine();
@@ -100,10 +101,23 @@ public class ReadWebPage
                         arrayHolder[0] = lineRecipe; //author
                         //write to file
                      }
-                     
-         //needs to find the path too
-         arrayHolder[1] = "/path/to/recipe"; //path
-         arrayHolder[2] = "name of recipe"; //name of recipe
+         
+                     boolean stop = false;
+                     StringBuilder breadcrumbs = new StringBuilder("");
+                     if(lineRecipe.contains("breadcrumb-element"))
+                     {
+                        String crumb = lineRecipe.substring(lineRecipe.indexOf('>'), lineRecipe.length());
+                        String shortCrumb = crumb.substring(1, crumb.indexOf('<'));
+/*problem*/             breadcrumbs.append(shortCrumb + "/");
+                        arrayHolder[1] = breadcrumbs.toString(); //path
+                     }
+         
+                     if(lineRecipe.contains("recipe-col-2 hide-mobile")) //I know this looks strange,
+                     {                                                     //but the recipe tite is on the same line as "recipe-title",
+                        lineRecipe = recipeReader.nextLine();              //so in order to find it I have to look on the line above it
+                        System.out.println(lineRecipe);
+                        arrayHolder[2] = lineRecipe; //recipe name
+                     }
          
                      if(lineRecipe.contains("recipe-details-serves"))
                      {
@@ -113,35 +127,41 @@ public class ReadWebPage
                         //write to file
                      }
 
-                     boolean stop = false;
+                     stop = false;
+                     StringBuilder ingredients = new StringBuilder("");
                      if(lineRecipe.contains("recipe-details-ingredients"))
                      {
                         while(recipeReader.hasNextLine() && !stop)
                         {
                            lineRecipe = recipeReader.nextLine();
                            System.out.println(lineRecipe);
-                           arrayHolder[4] = lineRecipe; //ingredients
-                           //write to file 
+                           ingredients.append(lineRecipe + " ");
+
                            if(lineRecipe.contains("</div>"))
                            {
                               stop = true;
+                              String arrayIngr = ingredients.toString();
+                              arrayHolder[4] = arrayIngr; //ingredients
                               //end ingredients reading
                            }
                         }
                      }
                      
                      stop = false;
+                     StringBuilder procedure = new StringBuilder("");
                      if(lineRecipe.contains("recipe-details-procedure"))
                      {
                         while(recipeReader.hasNextLine() && !stop)
                         {
                            lineRecipe = recipeReader.nextLine();
                            System.out.println(lineRecipe);
-                           arrayHolder[5] = lineRecipe; //instructions
-                           //write to file 
+                           procedure.append(lineRecipe + " ");
+                           
                            if(lineRecipe.contains("</div>"))
                            {
                               stop = true;
+                              String arrayProc = procedure.toString();
+                              arrayHolder[5] = arrayProc; //instructions
                               //end instructions reading
                            }
                         }
