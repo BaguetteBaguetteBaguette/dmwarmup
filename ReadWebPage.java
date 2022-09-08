@@ -85,10 +85,19 @@ public class ReadWebPage
                   File toScanRecipe = new File("recipe.txt");
                   Scanner recipeReader = new Scanner(toScanRecipe);
                   
+                  //String builders to use later
+                  StringBuilder breadcrumbs = new StringBuilder("");
+                  StringBuilder ingredients = new StringBuilder("");
+                  StringBuilder procedure = new StringBuilder("");
+                  
+                  //boolean to tell certain loops to stop
+                  boolean stop = false;
+                  
                   for(int i=0; i < 1000; i++) //skip all the lines that dont really matter
                   {
                      recipeReader.nextLine();
                   }
+                 
                   
                   while (recipeReader.hasNextLine())
                   {
@@ -102,13 +111,11 @@ public class ReadWebPage
                         //write to file
                      }
          
-                     boolean stop = false;
-                     StringBuilder breadcrumbs = new StringBuilder("");
                      if(lineRecipe.contains("breadcrumb-element"))
                      {
                         String crumb = lineRecipe.substring(lineRecipe.indexOf('>'), lineRecipe.length());
                         String shortCrumb = crumb.substring(1, crumb.indexOf('<'));
-/*problem*/             breadcrumbs.append(shortCrumb + "/");
+/*problem*/             breadcrumbs.append(shortCrumb + "/"); //for some reason this isnt appending 
                         arrayHolder[1] = breadcrumbs.toString(); //path
                      }
          
@@ -128,7 +135,6 @@ public class ReadWebPage
                      }
 
                      stop = false;
-                     StringBuilder ingredients = new StringBuilder("");
                      if(lineRecipe.contains("recipe-details-ingredients"))
                      {
                         while(recipeReader.hasNextLine() && !stop)
@@ -148,7 +154,6 @@ public class ReadWebPage
                      }
                      
                      stop = false;
-                     StringBuilder procedure = new StringBuilder("");
                      if(lineRecipe.contains("recipe-details-procedure"))
                      {
                         while(recipeReader.hasNextLine() && !stop)
