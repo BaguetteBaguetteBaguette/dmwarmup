@@ -162,6 +162,8 @@ public class ReadWebPage
                               shortRec = shortRec.replace("</i>","");
                               shortRec = shortRec.replace("<ul>","");
                               shortRec = shortRec.replace("</ul>","");
+                              shortRec = shortRec.replace("<ol>",""); 
+                              shortRec = shortRec.replace("</ol>","");
                               
                               System.out.println(shortRec);
                               ingredients.append(shortRec + " ");
@@ -191,7 +193,7 @@ public class ReadWebPage
                               arrayHolder[5] = procedure.toString(); //add instructions to the array
                               //end instructions reading
                            }
-                           else if(lineRecipe.contains("<b>") || lineRecipe.contains("<i>") || lineRecipe.contains("<br>") || lineRecipe.contains("<li>"))
+                           else if(lineRecipe.contains("<b>") || lineRecipe.contains("<i>") || lineRecipe.contains("<br>") || lineRecipe.contains("<li>") || lineRecipe.contains("<ol>"))
                            {
                               lineRecipe = lineRecipe.replace("<b>","");
                               lineRecipe = lineRecipe.replace("</b>","");
@@ -201,7 +203,9 @@ public class ReadWebPage
                               lineRecipe = lineRecipe.replace("<ul>","");
                               lineRecipe = lineRecipe.replace("</ul>",""); 
                               lineRecipe = lineRecipe.replace("<li>","");
-                              lineRecipe = lineRecipe.replace("</li>","");                        
+                              lineRecipe = lineRecipe.replace("</li>","");  
+                              lineRecipe = lineRecipe.replace("<ol>",""); 
+                              lineRecipe = lineRecipe.replace("</ol>","");                   
                            }
                            
                            System.out.println(lineRecipe); //if this comes up /div in the output box ignore it
