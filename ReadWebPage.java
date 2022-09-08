@@ -49,7 +49,7 @@ public class ReadWebPage
         File toScan = new File("mainFile.txt");
         Scanner mainReader = new Scanner(toScan);
         
-        //skip the first 
+        //skip the first 1514 lines (they are unimportant)
         for(int i=0; i < 1514; i++)
         {
             mainReader.nextLine();
@@ -102,7 +102,7 @@ public class ReadWebPage
                      recipeReader.nextLine();
                   }
                  
-                  
+                  //read from the recipe file
                   while (recipeReader.hasNextLine())
                   {
                      String lineRecipe = recipeReader.nextLine();
@@ -119,8 +119,8 @@ public class ReadWebPage
                      if(lineRecipe.contains("breadcrumb-element"))
                      {
                         String crumb = lineRecipe.substring(lineRecipe.indexOf('>'), lineRecipe.length());
-                        String shortCrumb = crumb.substring(1, crumb.indexOf('<'));
-                        breadcrumbs.append(shortCrumb + "/"); 
+                        crumb = crumb.substring(1, crumb.indexOf('<'));
+                        breadcrumbs.append(crumb + "/"); 
                         arrayHolder[1] = breadcrumbs.toString(); //add the path to the array
                      }
          
@@ -128,8 +128,10 @@ public class ReadWebPage
                      if(lineRecipe.contains("recipe-col-2 hide-mobile")) //I know this looks strange,
                      {                                                     //but the recipe tite is on the same line as "recipe-title",
                         lineRecipe = recipeReader.nextLine();              //so in order to find it I have to look on the line above it
-                        System.out.println(lineRecipe);
-                        arrayHolder[2] = lineRecipe; //add recipe name to the array
+                        String shortNam = lineRecipe.substring(lineRecipe.indexOf('>'), lineRecipe.length());
+                        shortNam = shortNam.substring(1, shortNam.indexOf('<'));
+                        System.out.println(shortNam);
+                        arrayHolder[2] = shortNam; //add recipe name to the array
                      }
          
                      //Get the number of servings for the recipe, and add it to the array for the csv file
@@ -142,15 +144,28 @@ public class ReadWebPage
 
                      //Get the ingredients for the recipe, and make them into one string that can be added to the array for the csv file
                      stop = false;
+                     String shortRec = "placeholder";
                      if(lineRecipe.contains("recipe-details-ingredients"))
                      {
+                        recipeReader.nextLine();
                         while(recipeReader.hasNextLine() && !stop)
                         {
                            lineRecipe = recipeReader.nextLine();
-                           System.out.println(lineRecipe);
-                           ingredients.append(lineRecipe + " ");
-
-                           if(lineRecipe.contains("</div>"))
+                           
+                           if(lineRecipe.contains("<li>"))
+                           {
+                              shortRec = lineRecipe.replace("<li>","");
+                              shortRec = shortRec.replace("</li>","");
+                              shortRec = shortRec.replace("<b>","");
+                              shortRec = shortRec.replace("</b>","");
+                              shortRec = shortRec.replace("<i>","");
+                              shortRec = shortRec.replace("</i>","");
+                              
+                              System.out.println(shortRec);
+                              ingredients.append(shortRec + " ");
+                           }
+                           
+                           if(lineRecipe.contains("</ul>"))
                            {
                               stop = true;
                               arrayHolder[4] = ingredients.toString(); //add ingredients to the array
@@ -167,8 +182,6 @@ public class ReadWebPage
                         while(recipeReader.hasNextLine() && !stop)
                         {
                            lineRecipe = recipeReader.nextLine();
-                           System.out.println(lineRecipe);
-                           procedure.append(lineRecipe + " ");
                            
                            if(lineRecipe.contains("</div>"))
                            {
@@ -176,6 +189,18 @@ public class ReadWebPage
                               arrayHolder[5] = procedure.toString(); //add instructions to the array
                               //end instructions reading
                            }
+                           else if(lineRecipe.contains("<b>") || lineRecipe.contains("<i>") || lineRecipe.contains("<br>"))
+                           {
+                              lineRecipe = lineRecipe.replace("<b>","");
+                              lineRecipe = lineRecipe.replace("</b>","");
+                              lineRecipe = lineRecipe.replace("<br>","");
+                              lineRecipe = lineRecipe.replace("<i>","");
+                              lineRecipe = lineRecipe.replace("</i>","");                             
+                           }
+                           
+                           System.out.println(lineRecipe); //if this comes up /div in the output box ignore it
+                           lineRecipe = lineRecipe.replace("</div>","");
+                           procedure.append(lineRecipe + " ");
                         }
                      }
                   }
